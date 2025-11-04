@@ -120,6 +120,26 @@
             
             // Add cursor pointer to indicate clickable
             $('.scene').css('cursor', 'pointer');
+            
+            // Reverse animation when clicking on letter after it's fully opened
+            $('#letter').on('click', function(e){
+                if (animationPlayed && tl.progress() === 1) {
+                    e.stopPropagation(); // Prevent event bubbling
+                    tl.reverse();
+                    animationPlayed = false;
+                    $('.scene').css('cursor', 'pointer'); // Restore pointer cursor
+                }
+            });
+            
+            // Add cursor pointer to letter when animation is complete
+            tl.eventCallback("onComplete", function() {
+                $('#letter').css('cursor', 'pointer');
+            });
+            
+            // Remove pointer from letter when reversing
+            tl.eventCallback("onReverseComplete", function() {
+                $('#letter').css('cursor', 'default');
+            });
         });
 
 

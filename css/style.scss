@@ -20,13 +20,18 @@ img {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-image: url('../images/bg.jpg'); // Fallback for browsers without video support
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-color: transparent;
     height: 100vh;
     overflow: hidden;
     position: relative;
+}
+
+// Fallback background - only shows when video is hidden
+.wrapper.no-video {
+    background-image: url('../images/bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 // Video Background Styles

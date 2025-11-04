@@ -12,22 +12,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
     <script>
         jQuery(window).on('load', function(){
-            // Video background error handling
+            // Video background with fallback handling
             var video = document.getElementById('bg-video');
+            var videoLoaded = false;
+            
             if (video) {
+                // Timeout: If video doesn't load in 3 seconds, show fallback
+                var fallbackTimeout = setTimeout(function() {
+                    if (!videoLoaded) {
+                        $('.wrapper').addClass('no-video');
+                    }
+                }, 3000);
+                
+                // Try to play the video
+                var playPromise = video.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(function() {
+                        videoLoaded = true;
+                        clearTimeout(fallbackTimeout);
+                    }).catch(function(error) {
+                        videoLoaded = true;
+                        clearTimeout(fallbackTimeout);
+                        // Try to play on user interaction
+                        document.addEventListener('click', function() {
+                            video.play().catch(function() {
+                                $('.wrapper').addClass('no-video');
+                            });
+                        }, { once: true });
+                    });
+                }
+                
                 video.addEventListener('error', function() {
-                    // Hide video and let CSS background image show through
+                    clearTimeout(fallbackTimeout);
                     $(this).hide();
-                    console.log('Video failed to load, using fallback image');
+                    $('.wrapper').addClass('no-video');
                 }, true);
                 
-                // Also check if video can play
                 video.addEventListener('loadeddata', function() {
-                    console.log('Video background loaded successfully');
+                    videoLoaded = true;
+                    clearTimeout(fallbackTimeout);
                 });
+            } else {
+                $('.wrapper').addClass('no-video');
             }
             
-            var animationPlayed = false; // Prevent multiple plays
+            var animationPlayed = false;
             
             // Responsive animation parameters based on screen width
             var screenWidth = window.innerWidth;

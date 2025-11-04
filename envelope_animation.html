@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
+<meta charset="utf-8" />
 <head>
-    <title>Newsletter envelope animation</title>
+    <title>Vy & Tài</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +12,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
     <script>
         jQuery(window).on('load', function(){
+            // Get love parameter from query string
+            var urlParams = new URLSearchParams(window.location.search);
+            var loveParam = urlParams.get('love');
+            
+            // Update image sources if love parameter exists
+            if (loveParam) {
+                $('#letter').attr('src', 'images/letter.php?love=' + encodeURIComponent(loveParam));
+                $('.envelop__face--front img').attr('src', 'images/envelop-front.php?love=' + encodeURIComponent(loveParam));
+            }
+            
             // Video background with fallback handling
             var video = document.getElementById('bg-video');
             var videoLoaded = false;

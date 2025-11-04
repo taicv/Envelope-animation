@@ -12,14 +12,74 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
     <script>
         jQuery(window).on('load', function(){
-           var tl = gsap.timeline({repeat: 0, repeatDelay: 1});
+            // Video background error handling
+            var video = document.getElementById('bg-video');
+            if (video) {
+                video.addEventListener('error', function() {
+                    // Hide video and let CSS background image show through
+                    $(this).hide();
+                    console.log('Video failed to load, using fallback image');
+                }, true);
+                
+                // Also check if video can play
+                video.addEventListener('loadeddata', function() {
+                    console.log('Video background loaded successfully');
+                });
+            }
+            
+            var animationPlayed = false; // Prevent multiple plays
+            
+            // Responsive animation parameters based on screen width
+            var screenWidth = window.innerWidth;
+            var letterXPercent, letterYPercent, letterScale, envelopeScale;
+            
+            if (screenWidth <= 380) {
+                // Very small mobile - center the letter, make it readable
+                letterXPercent = -5;
+                letterYPercent = 0;
+                letterScale = 1.8;
+                envelopeScale = 0.55;
+            } else if (screenWidth <= 576) {
+                // Mobile - slightly offset, good readability
+                letterXPercent = 10;
+                letterYPercent = -5;
+                letterScale = 1.9;
+                envelopeScale = 0.6;
+            } else if (screenWidth <= 768) {
+                // Tablet
+                letterXPercent = 50;
+                letterYPercent = -8;
+                letterScale = 1.8;
+                envelopeScale = 0.68;
+            } else {
+                // Desktop
+                letterXPercent = 100;
+                letterYPercent = -10;
+                letterScale = 1.75;
+                envelopeScale = 0.75;
+            }
+            
+            // Create timeline but don't play it
+            var tl = gsap.timeline({repeat: 0, repeatDelay: 1, paused: true});
             tl.to(".envelop", {rotationY: 180, ease:"none", duration: 1, delay:1});
             tl.to(".cover", {rotationX: 180, ease:"none", duration: 1, delay:1}).set($('.cover'), {css:{zIndex:2}});
             tl.to("#letter",{yPercent:-70, ease:"none", duration:1}).set($('#letter'), {css:{zIndex:9}});
             tl.to("#letter",{rotation:0, ease:"none", duration:1});
             tl.add('start').to("#letter",{   ease:"none", duration:1},'start')
-            .to(".envelop", {rotationZ: 10, scale:.75, ease:"none", duration: 1},'start')
-            .to("#letter", {xPercent:100, yPercent:-10, rotationZ: -10, scale: 1.75, ease:"none", duration: 1},'start');
+            .to(".envelop", {rotationZ: 10, scale:envelopeScale, ease:"none", duration: 1},'start')
+            .to("#letter", {xPercent:letterXPercent, yPercent:letterYPercent, rotationZ: -10, scale: letterScale, ease:"none", duration: 1},'start');
+            
+            // Play animation on click/tap
+            $('.scene').on('click', function(){
+                if (!animationPlayed) {
+                    tl.play();
+                    animationPlayed = true;
+                    $(this).css('cursor', 'default'); // Change cursor after animation starts
+                }
+            });
+            
+            // Add cursor pointer to indicate clickable
+            $('.scene').css('cursor', 'pointer');
         });
 
 
@@ -30,6 +90,12 @@
 
 <body>
     <div class="wrapper">
+        <!-- Video Background with fallback -->
+        <video id="bg-video" autoplay loop muted playsinline poster="images/bg.jpg">
+            <source src="images/bg.mp4" type="video/mp4">
+            <!-- Fallback image is handled via poster attribute and CSS -->
+        </video>
+        
         <div class="scene">
             <div class="envelop">
                 <div class="envelop__face envelop__face--back">

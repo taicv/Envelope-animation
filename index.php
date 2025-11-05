@@ -10,7 +10,7 @@
     <?php
     // Get love parameter for dynamic OG image
     $loveParam = isset($_GET['love']) ? htmlspecialchars($_GET['love']) : '';
-    $ogImageUrl = 'images/envelop-front/' . ($loveParam ? $loveParam.'.jpg' : '');
+    $ogImageUrl = 'images/og/' . ($loveParam ? $loveParam.'.jpg' : '');
     $fullUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . dirname($_SERVER['PHP_SELF']);
     $fullOgImageUrl = rtrim($baseUrl, '/') . '/' . $ogImageUrl;

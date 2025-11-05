@@ -29,7 +29,12 @@ function decodeIfBase64($value){
 // Get the name from URL parameter (decode if base64)
 $rawName = isset($_GET['love']) ? $_GET['love'] : 'Guest';
 $name = decodeIfBase64($rawName);
-CreateOG($name);
+if(!file_exists("./".base64_encode($name).".jpg")){
+	CreateOG($name);
+}else{
+	header("Location: ./".base64_encode($name).".jpg");
+	exit;
+}
 
 function CreateOG($author_data){
 	$background_file	=	"../envelop-front.jpg";
@@ -44,9 +49,9 @@ function CreateOG($author_data){
 	  
 	  // Create a blank canvas for the text
 	  $author_name
-		->fromNew(400, 100, 'transparent')
-		->text($author_data, array('fontFile' =>"../DVN-Parisienne-Regular-c6gxjr.ttf",'size' =>60,'color' =>"#04274d",'anchor' =>"bottom"),$author_name_boundary)
-		->bestFit(320,60);
+		->fromNew(800, 200, 'transparent')
+		->text($author_data, array('fontFile' =>"../DVN-Parisienne-Regular-c6gxjr.ttf",'size' =>80,'color' =>"#04274d",'anchor' =>"bottom"),$author_name_boundary)
+		->bestFit(500,150);
 		//->toFile("./images/".$author_data[1].".png", 'image/jpeg');
 		
 			//var_dump($author_name_boundary);
@@ -62,10 +67,11 @@ function CreateOG($author_data){
 			//->overlay($author_avatar,"top left",1,110,127,true)  // add a watermark image
 			//->overlay($watermark_file, 'bottom right')  // add a watermark image
 			//->text("Chu Văn Tài", array('fontFile' =>"./SVN-Arsilon.ttf",'size' =>15,'color' =>"white",'anchor' =>"center",'xOffset' =>325,'yOffset' =>178,'calculateOffsetFromEdge' =>true))  // add a watermark image
-			->overlay($author_name, 'bottom',1,60,-148,false)
+			->overlay($author_name, 'bottom',1,60,-145,false)
 			//->text($author_data[1], array('fontFile' =>"./SVN-Arsilon.ttf",'size' =>30,'color' =>"white",'anchor' =>"center",'xOffset' =>65,'yOffset' =>-15,'calculateOffsetFromEdge' =>true))  // add a watermark image
 			//->text($author_data[1], array('fontFile' =>"./SVN-Arsilon.ttf",'size' =>30,'color' =>"white",'anchor' =>"center",'xOffset' =>65,'yOffset' =>-15,'calculateOffsetFromEdge' =>true))  // add a watermark image
 			//->toScreen('image/jpeg');      // convert to PNG and save a copy to new-image.png
+			->toFile("./".base64_encode($author_data).".jpg", 'image/jpeg')
 			->toScreen();                               // output to the screen
 
 		  // And much more! 💪

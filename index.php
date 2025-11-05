@@ -258,6 +258,16 @@
             // Add cursor pointer to indicate clickable
             $('.scene').css('cursor', 'pointer');
             
+            // Auto-play animation if play=true parameter is present
+            var playParam = urlParams.get('play');
+            if (playParam === 'true' && !animationPlayed) {
+                setTimeout(function() {
+                    tl.play();
+                    animationPlayed = true;
+                    $('.scene').css('cursor', 'default');
+                }, 500); // Small delay after page load for smooth experience
+            }
+            
             // Reverse animation when clicking on letter after it's fully opened
             $('#letter').on('click', function(e){
                 if (animationPlayed && tl.progress() === 1) {

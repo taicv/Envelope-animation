@@ -32,6 +32,7 @@ img {
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    filter: blur(10px);
 }
 
 // Video Background Styles
@@ -49,6 +50,7 @@ img {
     background-image: url('../images/bg.jpg'); // Fallback while video loads
     background-size: cover;
     background-position: center;
+    filter: blur(10px);
 }
 
 
@@ -69,7 +71,7 @@ img {
             @include full-width();
             position: absolute;
             backface-visibility: hidden;
-            box-shadow: 5px 7px 16px 11px #87878773;
+            box-shadow: 5px 5px 16px 7px rgb(0 0 0 / 35%);
             &--front{
                 background-color: #e7dbdb;
             }
@@ -121,6 +123,7 @@ img {
                     width: 66%;
                     left: 17%;
                     z-index: 2;
+                    box-shadow: 5px 5px 16px 7px rgb(0 0 0 / 35%);
                 }
 
 

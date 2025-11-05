@@ -10,7 +10,7 @@
     <?php
     // Get love parameter for dynamic OG image
     $loveParam = isset($_GET['love']) ? htmlspecialchars($_GET['love']) : '';
-    $ogImageUrl = 'images/envelop-front/' . ($loveParam ? '?love=' . $loveParam : '');
+    $ogImageUrl = 'images/envelop-front/' . ($loveParam ? $loveParam.'.jpg' : '');
     $fullUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . dirname($_SERVER['PHP_SELF']);
     $fullOgImageUrl = rtrim($baseUrl, '/') . '/' . $ogImageUrl;
@@ -123,8 +123,8 @@
             
             // Update image sources if love parameter exists
             if (loveParam) {
-                $('#letter').attr('src', 'images/letter/?love=' + loveParam);
-                $('.envelop__face--front img').attr('src', 'images/envelop-front/?love=' + loveParam);
+                $('#letter').attr('src', 'images/letter/' + loveParam + '.jpg');
+                $('.envelop__face--front img').attr('src', 'images/envelop-front/' + loveParam + '.jpg');
             }
             
             // Track image loading
@@ -296,7 +296,7 @@
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loading-content">
-            <div class="loading-message"><i>Cô Dâu và chú rể đang viết thiệp, xin chờ một xíuuu</i></div>
+            <div class="loading-message"><i>xin chờ một xíuuu</i></div>
             <div class="loading-spinner"></div>
         </div>
     </div>

@@ -1,4 +1,5 @@
 RewriteEngine On
+RewriteBase /thiep/envelop-front/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{QUERY_STRING} ^love=(.+)$

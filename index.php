@@ -306,7 +306,7 @@
                     tl.play();
                     animationPlayed = true;
                     $('.scene').css('cursor', 'default');
-                }, 500); // Small delay after page load for smooth experience
+                }, 2000); // Wait 2 minutes (120000ms) before auto-play
             }
             
             // Reverse animation when clicking on letter after it's fully opened

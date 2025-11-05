@@ -91,6 +91,25 @@
                 font-size: 16px;
             }
         }
+        
+        #fullscreen-letter {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            cursor: pointer;
+        }
+        
+        #fullscreen-letter.visible {
+            pointer-events: auto;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.2.min.js"
         integrity="sha256-2krYZKh//PcchRtd+H+VyyQoZ/e3EcrkxhM8ycwASPA=" crossorigin="anonymous"></script>
@@ -106,6 +125,9 @@
             if (imagesLoaded.letter && imagesLoaded.envelopeFront) {
                 setTimeout(function() {
                     $('#loading-screen').addClass('hidden');
+
+                    // Signal Puppeteer to start recording
+                    document.body.setAttribute('data-record', 'start');
                     // Remove from DOM after transition
                     setTimeout(function() {
                         $('#loading-screen').remove();
@@ -236,6 +258,10 @@
                 envelopeScale = 0.75;
             }
             
+            // Check if play=true parameter is present
+            var playParam = urlParams.get('play');
+            var shouldAutoPlay = playParam === 'true';
+            
             // Create timeline but don't play it
             var tl = gsap.timeline({repeat: 0, repeatDelay: 1, paused: true});
             tl.to(".envelop", {rotationY: 180, ease:"none", duration: 1, delay:1});
@@ -245,6 +271,22 @@
             tl.add('start').to("#letter",{   ease:"none", duration:1},'start')
             .to(".envelop", {rotationZ: 10, scale:envelopeScale, ease:"none", duration: 1},'start')
             .to("#letter", {xPercent:letterXPercent, yPercent:letterYPercent, rotationZ: -10, scale: letterScale, ease:"none", duration: 1},'start');
+            
+            // Add full screen letter display if play=true
+            if (shouldAutoPlay) {
+                // Create full screen letter element after animation completes
+                tl.call(function() {
+                    // Fade out the envelope and animated letter
+                    gsap.to(".envelop", {opacity: 0, duration: 0.5});
+                    gsap.to("#letter", {opacity: 0, duration: 0.5});
+                    
+                    // Show full screen letter
+                    var letterSrc = $('#letter').attr('src');
+                    $('#fullscreen-letter').attr('src', letterSrc);
+                    $('#fullscreen-letter').addClass('visible');
+                    gsap.to("#fullscreen-letter", {opacity: 1, duration: 0.8, delay: 0.3});
+                }, null, "+=0.5");
+            }
             
             // Play animation on click/tap
             $('.scene').on('click', function(){
@@ -259,8 +301,7 @@
             $('.scene').css('cursor', 'pointer');
             
             // Auto-play animation if play=true parameter is present
-            var playParam = urlParams.get('play');
-            if (playParam === 'true' && !animationPlayed) {
+            if (shouldAutoPlay && !animationPlayed) {
                 setTimeout(function() {
                     tl.play();
                     animationPlayed = true;
@@ -278,14 +319,38 @@
                 }
             });
             
+            // Handle fullscreen letter click for auto-play mode
+            $('#fullscreen-letter').on('click', function(e){
+                if (shouldAutoPlay && animationPlayed && tl.progress() === 1) {
+                    e.stopPropagation();
+                    // Hide fullscreen letter first
+                    gsap.to("#fullscreen-letter", {opacity: 0, duration: 0.3, onComplete: function() {
+                        $('#fullscreen-letter').removeClass('visible');
+                        gsap.set(".envelop", {opacity: 1});
+                        gsap.set("#letter", {opacity: 1});
+                        tl.reverse();
+                        animationPlayed = false;
+                        $('.scene').css('cursor', 'pointer');
+                    }});
+                }
+            });
+            
             // Add cursor pointer to letter when animation is complete
             tl.eventCallback("onComplete", function() {
                 $('#letter').css('cursor', 'pointer');
+                document.body.setAttribute('data-record', 'stop');
             });
             
             // Remove pointer from letter when reversing
             tl.eventCallback("onReverseComplete", function() {
                 $('#letter').css('cursor', 'default');
+                // Reset elements if they were hidden (backup cleanup)
+                if (shouldAutoPlay) {
+                    $('#fullscreen-letter').removeClass('visible');
+                    gsap.set("#fullscreen-letter", {opacity: 0});
+                    gsap.set(".envelop", {opacity: 1});
+                    gsap.set("#letter", {opacity: 1});
+                }
             });
         });
 
@@ -331,6 +396,9 @@
             </div>
 
         </div>
+        
+        <!-- Full screen letter for auto-play mode -->
+        <img id="fullscreen-letter" src="" alt="Letter">
 
     </div>
 

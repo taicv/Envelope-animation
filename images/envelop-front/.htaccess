@@ -1,6 +1,6 @@
 RewriteEngine On
 RewriteBase /thiep/images/envelop-front/
+# If .jpg file doesn't exist, route to index.php?love=filename
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{QUERY_STRING} ^love=(.+)$
-RewriteRule ^.*$ %1.jpg [L]
+RewriteRule ^(.+)\.jpg$ index.php?love=$1 [L,QSA]

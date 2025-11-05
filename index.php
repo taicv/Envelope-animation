@@ -18,8 +18,8 @@
             
             // Update image sources if love parameter exists
             if (loveParam) {
-                $('#letter').attr('src', 'images/letter.php?love=' + encodeURIComponent(loveParam));
-                $('.envelop__face--front img').attr('src', 'images/envelop-front.php?love=' + encodeURIComponent(loveParam));
+                $('#letter').attr('src', 'images/letter.php?love=' + atou(loveParam));
+                $('.envelop__face--front img').attr('src', 'images/envelop-front.php?love=' + atou(loveParam));
             }
             
             // Video background with fallback handling
@@ -142,8 +142,13 @@
             });
         });
 
+        function atou(b64) {
+            return decodeURIComponent(escape(atob(b64)));
+        }
 
-
+        function utoa(data) {
+            return btoa(unescape(encodeURIComponent(data)));
+        }
 
     </script>
 </head>

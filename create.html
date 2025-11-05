@@ -10,19 +10,19 @@
             function utoa(data) {
                 return btoa(unescape(encodeURIComponent(data)));
             }
-            function copyEncoded() {
-                var encoded = document.getElementById('encodedInput').value;
+            function copyEncoded(inputId) {
+                var encoded = document.getElementById(inputId).value;
                 if (!encoded) return;
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(encoded);
                 } else {
-                    var el = document.getElementById('encodedInput');
+                    var el = document.getElementById(inputId);
                     el.select();
                     try { document.execCommand('copy'); } catch (e) {}
                 }
             }
             
-            function generateImages() {
+            function generateImages(type) {
                 var name = document.getElementById('nameInput').value;
                 if (!name) {
                     alert('Please enter a name first');
@@ -32,9 +32,15 @@
                 var encoded = utoa(name);
                 
                 // Display the images
-                document.getElementById('letterImg').src = 'images/letter/?love=' + encoded + '';
-                document.getElementById('envelopeFrontImg').src = 'images/envelop-front/?love=' + encoded + '';
-                document.getElementById('imagesSection').style.display = 'block';
+                if (type === 'saigon') {
+                    document.getElementById('letterImgSG').src = 'images/letter/?love=' + encoded + '';
+                    document.getElementById('envelopeFrontImgSG').src = 'images/envelop-front/?love=' + encoded + '';
+                    document.getElementById('imagesSectionSG').style.display = 'block';
+                } else if (type === 'tuyphong') {
+                    document.getElementById('letterImgTP').src = 'https://vy.taicv.com/card/images/letter/?love=' + encoded + '';
+                    document.getElementById('envelopeFrontImgTP').src = 'https://vy.taicv.com/card/images/envelop-front/?love=' + encoded + '';
+                    document.getElementById('imagesSectionTP').style.display = 'block';
+                }
             }
         </script>
         <style>
@@ -43,6 +49,9 @@
             label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; }
             input[type="text"] { width: 100%; padding: 10px 12px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
             input[type="text"]:focus { border-color: #1f6feb; box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15); }
+            .input-row { display: flex; gap: 8px; align-items: stretch; }
+            .input-row input[type="text"] { flex: 1; }
+            .input-row button { flex-shrink: 0; }
             .actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
             button { padding: 8px 14px; border: 1px solid #1f6feb; background: #1f6feb; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
             button:hover { background: #1656c1; border-color: #1656c1; }
@@ -59,28 +68,51 @@
 <body>
     <div class="field">
         <label for="nameInput">Name</label>
-        <input id="nameInput" type="text" placeholder="Enter name" onkeyup="document.getElementById('encodedInput').value = 'https://vy.taicv.com/thiep/?love=' + encodeURIComponent(utoa(this.value));" />
+        <input id="nameInput" type="text" placeholder="Enter name" onkeyup="var encoded = encodeURIComponent(utoa(this.value)); document.getElementById('encodedInput').value = 'https://vy.taicv.com/thiep/?love=' + encoded; document.getElementById('encodedInput2').value = 'https://vy.taicv.com/card/?love=' + encoded;" />
     </div>
 
     <div class="field">
-        <label for="encodedInput">Link</label>
-        <input id="encodedInput" type="text" placeholder="Generated link" readonly onclick="this.select();" />
-        <div class="actions">
-            <button type="button" onclick="copyEncoded()">Copy</button>
-            <button type="button" class="secondary" onclick="generateImages()">Generate images</button>
+        <label for="encodedInput">Link Thiệp Sài Gòn</label>
+        <div class="input-row">
+            <input id="encodedInput" type="text" placeholder="Generated link" readonly onclick="this.select();" />
+            <button type="button" onclick="copyEncoded('encodedInput')">Copy</button>
+            <button type="button" class="secondary" onclick="generateImages('saigon')">Generate images</button>
         </div>
     </div>
 
-    <div class="field" id="imagesSection" style="display: none;">
-        <label>Generated Images</label>
+    <div class="field" id="imagesSectionSG" style="display: none;">
+        <label>Generated Images - Sài Gòn</label>
         <div class="images-grid">
             <div class="image-box">
                 <p class="image-label">Letter</p>
-                <img id="letterImg" src="" alt="Letter" />
+                <img id="letterImgSG" src="" alt="Letter" />
             </div>
             <div class="image-box">
                 <p class="image-label">Envelope Front</p>
-                <img id="envelopeFrontImg" src="" alt="Envelope Front" />
+                <img id="envelopeFrontImgSG" src="" alt="Envelope Front" />
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label for="encodedInput2">Link Thiệp Tuy Phong</label>
+        <div class="input-row">
+            <input id="encodedInput2" type="text" placeholder="Generated link" readonly onclick="this.select();" />
+            <button type="button" onclick="copyEncoded('encodedInput2')">Copy</button>
+            <button type="button" class="secondary" onclick="generateImages('tuyphong')">Generate images</button>
+        </div>
+    </div>
+
+    <div class="field" id="imagesSectionTP" style="display: none;">
+        <label>Generated Images - Tuy Phong</label>
+        <div class="images-grid">
+            <div class="image-box">
+                <p class="image-label">Letter</p>
+                <img id="letterImgTP" src="" alt="Letter" />
+            </div>
+            <div class="image-box">
+                <p class="image-label">Envelope Front</p>
+                <img id="envelopeFrontImgTP" src="" alt="Envelope Front" />
             </div>
         </div>
     </div>

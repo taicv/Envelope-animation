@@ -34,7 +34,7 @@
 <body>
     <div class="field">
         <label for="nameInput">Name</label>
-        <input id="nameInput" type="text" placeholder="Enter name" onkeyup="document.getElementById('encodedInput').value = 'https://vy.taicv.com/thiep/?love=' + utoa(this.value);" />
+        <input id="nameInput" type="text" placeholder="Enter name" onkeyup="document.getElementById('encodedInput').value = 'https://vy.taicv.com/thiep/?love=' + encodeURIComponent(utoa(this.value));" />
     </div>
 
     <div class="field">

@@ -1,5 +1,7 @@
 <html>
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script>
             function atou(b64) {
                 return decodeURIComponent(escape(atob(b64)));
@@ -19,6 +21,21 @@
                     try { document.execCommand('copy'); } catch (e) {}
                 }
             }
+            
+            function generateImages() {
+                var name = document.getElementById('nameInput').value;
+                if (!name) {
+                    alert('Please enter a name first');
+                    return;
+                }
+                
+                var encoded = utoa(name);
+                
+                // Display the images
+                document.getElementById('letterImg').src = 'images/letter/?love=' + encoded + '';
+                document.getElementById('envelopeFrontImg').src = 'images/envelop-front/?love=' + encoded + '';
+                document.getElementById('imagesSection').style.display = 'block';
+            }
         </script>
         <style>
             body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
@@ -26,9 +43,17 @@
             label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; }
             input[type="text"] { width: 100%; padding: 10px 12px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
             input[type="text"]:focus { border-color: #1f6feb; box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15); }
-            .actions { margin-top: 8px; }
+            .actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
             button { padding: 8px 14px; border: 1px solid #1f6feb; background: #1f6feb; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
             button:hover { background: #1656c1; border-color: #1656c1; }
+            button.secondary { background: #2da44e; border-color: #2da44e; }
+            button.secondary:hover { background: #218838; border-color: #218838; }
+            .images-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+            .image-box img { width: 100%; border: 1px solid #d0d7de; border-radius: 8px; }
+            .image-label { margin: 0 0 8px; font-size: 13px; color: #666; }
+            @media (max-width: 640px) {
+                .images-grid { grid-template-columns: 1fr; }
+            }
         </style>
     </head>
 <body>
@@ -42,6 +67,21 @@
         <input id="encodedInput" type="text" placeholder="Generated link" readonly onclick="this.select();" />
         <div class="actions">
             <button type="button" onclick="copyEncoded()">Copy</button>
+            <button type="button" class="secondary" onclick="generateImages()">Generate images</button>
+        </div>
+    </div>
+
+    <div class="field" id="imagesSection" style="display: none;">
+        <label>Generated Images</label>
+        <div class="images-grid">
+            <div class="image-box">
+                <p class="image-label">Letter</p>
+                <img id="letterImg" src="" alt="Letter" />
+            </div>
+            <div class="image-box">
+                <p class="image-label">Envelope Front</p>
+                <img id="envelopeFrontImg" src="" alt="Envelope Front" />
+            </div>
         </div>
     </div>
 

@@ -7,10 +7,90 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css<?php echo "?time=" . time() ?>">
+    <style>
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,#b7e3e7 0%, #83c6cc 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-content {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-message {
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            color: #0d2e4d;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e7dbdb;
+            border-top: 5px solid #83c6cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 576px) {
+            .loading-message {
+                font-size: 18px;
+                padding: 0 15px;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .loading-message {
+                font-size: 16px;
+            }
+        }
+    </style>
     <script src="https://code.jquery.com/jquery-3.6.2.min.js"
         integrity="sha256-2krYZKh//PcchRtd+H+VyyQoZ/e3EcrkxhM8ycwASPA=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
     <script>
+        // Image loading tracker
+        var imagesLoaded = {
+            letter: false,
+            envelopeFront: false
+        };
+        
+        function checkAllImagesLoaded() {
+            if (imagesLoaded.letter && imagesLoaded.envelopeFront) {
+                setTimeout(function() {
+                    $('#loading-screen').addClass('hidden');
+                    // Remove from DOM after transition
+                    setTimeout(function() {
+                        $('#loading-screen').remove();
+                    }, 500);
+                }, 300); // Small delay for smooth transition
+            }
+        }
+        
         jQuery(window).on('load', function(){
             // Get love parameter from query string
             var urlParams = new URLSearchParams(window.location.search);
@@ -20,6 +100,40 @@
             if (loveParam) {
                 $('#letter').attr('src', 'images/letter/?love=' + loveParam);
                 $('.envelop__face--front img').attr('src', 'images/envelop-front/?love=' + loveParam);
+            }
+            
+            // Track image loading
+            var letterImg = document.getElementById('letter');
+            var envelopeFrontImg = document.querySelector('.envelop__face--front img');
+            
+            // Check if letter image is already loaded (cached)
+            if (letterImg.complete && letterImg.naturalHeight !== 0) {
+                imagesLoaded.letter = true;
+                checkAllImagesLoaded();
+            } else {
+                letterImg.addEventListener('load', function() {
+                    imagesLoaded.letter = true;
+                    checkAllImagesLoaded();
+                });
+                letterImg.addEventListener('error', function() {
+                    imagesLoaded.letter = true; // Hide loading even on error
+                    checkAllImagesLoaded();
+                });
+            }
+            
+            // Check if envelope front image is already loaded (cached)
+            if (envelopeFrontImg.complete && envelopeFrontImg.naturalHeight !== 0) {
+                imagesLoaded.envelopeFront = true;
+                checkAllImagesLoaded();
+            } else {
+                envelopeFrontImg.addEventListener('load', function() {
+                    imagesLoaded.envelopeFront = true;
+                    checkAllImagesLoaded();
+                });
+                envelopeFrontImg.addEventListener('error', function() {
+                    imagesLoaded.envelopeFront = true; // Hide loading even on error
+                    checkAllImagesLoaded();
+                });
             }
             
             // Video background with fallback handling
@@ -154,6 +268,14 @@
 </head>
 
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-message"><i>Cô Dâu và chú rể đang viết thiệp, xin chờ một xíuuu</i></div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+    
     <div class="wrapper">
         <!-- Video Background with fallback -->
         <video id="bg-video" autoplay loop muted playsinline poster="images/bg.jpg">

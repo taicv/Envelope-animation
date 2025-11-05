@@ -22,8 +22,6 @@
     <meta property="og:title" content="Vy & Tài - Thiệp Mời">
     <meta property="og:description" content="Cô Dâu và chú rể đang viết thiệp, xin chờ một xíuuu">
     <meta property="og:image" content="<?php echo htmlspecialchars($fullOgImageUrl); ?>">
-    <meta property="og:image:width" content="600">
-    <meta property="og:image:height" content="414">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">

@@ -18,8 +18,8 @@
             
             // Update image sources if love parameter exists
             if (loveParam) {
-                $('#letter').attr('src', 'images/letter.php?love=' + atou(loveParam));
-                $('.envelop__face--front img').attr('src', 'images/envelop-front.php?love=' + atou(loveParam));
+                $('#letter').attr('src', 'images/letter/?love=' + loveParam);
+                $('.envelop__face--front img').attr('src', 'images/envelop-front/?love=' + loveParam);
             }
             
             // Video background with fallback handling

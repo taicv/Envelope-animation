@@ -6,6 +6,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <?php
+    // Get love parameter for dynamic OG image
+    $loveParam = isset($_GET['love']) ? htmlspecialchars($_GET['love']) : '';
+    $ogImageUrl = 'images/envelop-front/' . ($loveParam ? '?love=' . $loveParam : '');
+    $fullUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . dirname($_SERVER['PHP_SELF']);
+    $fullOgImageUrl = rtrim($baseUrl, '/') . '/' . $ogImageUrl;
+    ?>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo htmlspecialchars($fullUrl); ?>">
+    <meta property="og:title" content="Vy & Tài - Thiệp Mời">
+    <meta property="og:description" content="Cô Dâu và chú rể đang viết thiệp, xin chờ một xíuuu">
+    <meta property="og:image" content="<?php echo htmlspecialchars($fullOgImageUrl); ?>">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="414">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<?php echo htmlspecialchars($fullUrl); ?>">
+    <meta property="twitter:title" content="Vy & Tài - Thiệp Mời">
+    <meta property="twitter:description" content="Cô Dâu và chú rể đang viết thiệp, xin chờ một xíuuu">
+    <meta property="twitter:image" content="<?php echo htmlspecialchars($fullOgImageUrl); ?>">
     <link rel="stylesheet" href="css/style.css<?php echo "?time=" . time() ?>">
     <style>
         #loading-screen {

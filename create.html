@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <script>
+            function atou(b64) {
+                return decodeURIComponent(escape(atob(b64)));
+            }
+
+            function utoa(data) {
+                return btoa(unescape(encodeURIComponent(data)));
+            }
+            function copyEncoded() {
+                var encoded = document.getElementById('encodedInput').value;
+                if (!encoded) return;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(encoded);
+                } else {
+                    var el = document.getElementById('encodedInput');
+                    el.select();
+                    try { document.execCommand('copy'); } catch (e) {}
+                }
+            }
+        </script>
+        <style>
+            body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+            .field { margin-bottom: 16px; max-width: 720px; }
+            label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; }
+            input[type="text"] { width: 100%; padding: 10px 12px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
+            input[type="text"]:focus { border-color: #1f6feb; box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15); }
+            .actions { margin-top: 8px; }
+            button { padding: 8px 14px; border: 1px solid #1f6feb; background: #1f6feb; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
+            button:hover { background: #1656c1; border-color: #1656c1; }
+        </style>
+    </head>
+<body>
+    <div class="field">
+        <label for="nameInput">Name</label>
+        <input id="nameInput" type="text" placeholder="Enter name" onkeyup="document.getElementById('encodedInput').value = 'https://vy.taicv.com/thiep/?love=' + utoa(this.value);" />
+    </div>
+
+    <div class="field">
+        <label for="encodedInput">Link</label>
+        <input id="encodedInput" type="text" placeholder="Generated link" readonly onclick="this.select();" />
+        <div class="actions">
+            <button type="button" onclick="copyEncoded()">Copy</button>
+        </div>
+    </div>
+
+</body>
+</html>

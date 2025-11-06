@@ -260,7 +260,7 @@
                 $('#letter').css('cursor', 'pointer');
                 setTimeout(function() {
                     document.body.setAttribute('data-record', 'stop');
-                }, 3000); // Wait 3 seconds before auto-play
+                }, 5000); // Wait 3 seconds before auto-play
                 
             });
             

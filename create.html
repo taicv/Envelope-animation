@@ -50,6 +50,17 @@
                     return;
                 }
                 
+                // Get elements
+                var statusId = type === 'saigon' ? 'statusSG' : 'statusTP';
+                var buttonId = type === 'saigon' ? 'videoButtonSG' : 'videoButtonTP';
+                var statusEl = document.getElementById(statusId);
+                var buttonEl = document.getElementById(buttonId);
+                
+                // Disable button and show status
+                buttonEl.disabled = true;
+                statusEl.innerHTML = '<span class="spinner"></span>Generating video... This may take up to 30 seconds';
+                statusEl.classList.add('show');
+                
                 var encoded = encodeURIComponent(utoa(name));
                 
                 // Check if running on localhost
@@ -75,14 +86,80 @@
                         'ngrok-skip-browser-warning': 'true'
                     }
                 })
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
-                    alert('Video generation request sent successfully!');
                     console.log('Response:', data);
+                    
+                    if (data.success && data.file) {
+                        // Update status
+                        statusEl.innerHTML = '<span class="spinner"></span>Video ready! Downloading...';
+                        
+                        // Extract the file path and download the video
+                        var filePath = data.file;
+                        var downloadUrl = 'https://f810781d5fea.ngrok-free.app' + filePath;
+                        
+                        // Download the file
+                        fetch(downloadUrl, {
+                            method: 'GET',
+                            headers: {
+                                'ngrok-skip-browser-warning': 'true'
+                            }
+                        })
+                        .then(response => response.blob())
+                        .then(blob => {
+                            // Create download link
+                            var url = window.URL.createObjectURL(blob);
+                            var a = document.createElement('a');
+                            a.href = url;
+                            a.download = name + '.mp4';
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                            
+                            // Success message
+                            statusEl.innerHTML = '✓ Video downloaded successfully as "' + name + '.mp4"';
+                            statusEl.style.color = '#2da44e';
+                            
+                            // Re-enable button after 3 seconds
+                            setTimeout(function() {
+                                buttonEl.disabled = false;
+                                statusEl.classList.remove('show');
+                                statusEl.style.color = '#6f42c1';
+                            }, 3000);
+                        })
+                        .catch(error => {
+                            statusEl.innerHTML = '✗ Error downloading video: ' + error.message;
+                            statusEl.style.color = '#d73a49';
+                            buttonEl.disabled = false;
+                            console.error('Download error:', error);
+                            
+                            setTimeout(function() {
+                                statusEl.classList.remove('show');
+                                statusEl.style.color = '#6f42c1';
+                            }, 5000);
+                        });
+                    } else {
+                        statusEl.innerHTML = '✗ Video generation failed. Please try again.';
+                        statusEl.style.color = '#d73a49';
+                        buttonEl.disabled = false;
+                        
+                        setTimeout(function() {
+                            statusEl.classList.remove('show');
+                            statusEl.style.color = '#6f42c1';
+                        }, 5000);
+                    }
                 })
                 .catch(error => {
-                    alert('Error sending video generation request: ' + error.message);
+                    statusEl.innerHTML = '✗ Error: ' + error.message;
+                    statusEl.style.color = '#d73a49';
+                    buttonEl.disabled = false;
                     console.error('Error:', error);
+                    
+                    setTimeout(function() {
+                        statusEl.classList.remove('show');
+                        statusEl.style.color = '#6f42c1';
+                    }, 5000);
                 });
             }
         </script>
@@ -102,6 +179,11 @@
             button.secondary:hover { background: #218838; border-color: #218838; }
             button.video { background: #6f42c1; border-color: #6f42c1; }
             button.video:hover { background: #5a32a3; border-color: #5a32a3; }
+            button:disabled { background: #6c757d; border-color: #6c757d; cursor: not-allowed; opacity: 0.6; }
+            .status-message { margin-top: 8px; font-size: 14px; color: #6f42c1; display: none; }
+            .status-message.show { display: block; }
+            .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #f3f3f3; border-top: 2px solid #6f42c1; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
             .images-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
             .image-box img { width: 100%; border: 1px solid #d0d7de; border-radius: 8px; }
             .image-label { margin: 0 0 8px; font-size: 13px; color: #666; }
@@ -126,8 +208,9 @@
             <input id="encodedInput" type="text" placeholder="Generated link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedInput')">Copy</button>
             <button type="button" class="secondary" onclick="generateImages('saigon')">Generate images</button>
-            <button type="button" class="video" onclick="generateVideo('saigon')">Generate Video</button>
+            <button type="button" id="videoButtonSG" class="video" onclick="generateVideo('saigon')">Generate Video</button>
         </div>
+        <div id="statusSG" class="status-message"></div>
     </div>
 
     <div class="field" id="imagesSectionSG" style="display: none;">
@@ -150,8 +233,9 @@
             <input id="encodedInput2" type="text" placeholder="Generated link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedInput2')">Copy</button>
             <button type="button" class="secondary" onclick="generateImages('tuyphong')">Generate images</button>
-            <button type="button" class="video" onclick="generateVideo('tuyphong')">Generate Video</button>
+            <button type="button" id="videoButtonTP" class="video" onclick="generateVideo('tuyphong')">Generate Video</button>
         </div>
+        <div id="statusTP" class="status-message"></div>
     </div>
 
     <div class="field" id="imagesSectionTP" style="display: none;">

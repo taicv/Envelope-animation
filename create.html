@@ -55,10 +55,24 @@
                     ? 'https://vy.taicv.com/thiep/?play=true&love=' + encoded
                     : 'https://vy.taicv.com/card/?play=true&love=' + encoded;
                 
-                var videoUrl = 'https://autoscreenrecord.min.vn/record?url=' + encodeURIComponent(baseUrl) + '&key=babb4d6ba4dcd4a952c315226bfccf6c4b86907e';
+                var videoUrl = 'https://f810781d5fea.ngrok-free.app/?url=' + encodeURIComponent(baseUrl) + '&key=babb4d6ba4dcd4a952c315226bfccf6c4b86907e';
                 
-                // Open video URL in new tab
-                window.open(videoUrl, '_blank');
+                // Send fetch request with ngrok header
+                fetch(videoUrl, {
+                    method: 'GET',
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert('Video generation request sent successfully!');
+                    console.log('Response:', data);
+                })
+                .catch(error => {
+                    alert('Error sending video generation request: ' + error.message);
+                    console.error('Error:', error);
+                });
             }
         </script>
         <style>
@@ -80,6 +94,10 @@
             .images-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
             .image-box img { width: 100%; border: 1px solid #d0d7de; border-radius: 8px; }
             .image-label { margin: 0 0 8px; font-size: 13px; color: #666; }
+            @media (max-width: 768px) {
+                .input-row { flex-wrap: wrap; }
+                .input-row input[type="text"] { flex: 1 1 100%; min-width: 100%; }
+            }
             @media (max-width: 640px) {
                 .images-grid { grid-template-columns: 1fr; }
             }

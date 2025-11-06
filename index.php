@@ -127,7 +127,7 @@
                     $('#loading-screen').addClass('hidden');
 
                     // Signal Puppeteer to start recording
-                    document.body.setAttribute('data-record', 'start');
+                    
                     // Remove from DOM after transition
                     setTimeout(function() {
                         $('#loading-screen').remove();
@@ -303,10 +303,14 @@
             // Auto-play animation if play=true parameter is present
             if (shouldAutoPlay && !animationPlayed) {
                 setTimeout(function() {
+                    document.body.setAttribute('data-record', 'start');
+                }, 1000); // Wait 3 seconds before auto-play
+                
+                setTimeout(function() {
                     tl.play();
                     animationPlayed = true;
                     $('.scene').css('cursor', 'default');
-                }, 2000); // Wait 2 minutes (120000ms) before auto-play
+                }, 5000); // Wait 2 minutes (120000ms) before auto-play
             }
             
             // Reverse animation when clicking on letter after it's fully opened
@@ -338,7 +342,10 @@
             // Add cursor pointer to letter when animation is complete
             tl.eventCallback("onComplete", function() {
                 $('#letter').css('cursor', 'pointer');
-                document.body.setAttribute('data-record', 'stop');
+                setTimeout(function() {
+                    document.body.setAttribute('data-record', 'stop');
+                }, 5000); // Wait 3 seconds before auto-play
+                
             });
             
             // Remove pointer from letter when reversing

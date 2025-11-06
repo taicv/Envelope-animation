@@ -110,6 +110,22 @@
         #fullscreen-letter.visible {
             pointer-events: auto;
         }
+        /* Recording mode optimizations */
+        body[data-recording="true"] .envelop,
+        body[data-recording="true"] #letter,
+        body[data-recording="true"] .cover {
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            perspective: 1000px;
+            -webkit-font-smoothing: subpixel-antialiased;
+        }
+
+        /* Force GPU acceleration for smooth rendering */
+        .envelop, #letter, .cover {
+            transform: translate3d(0,0,0);
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.2.min.js"
         integrity="sha256-2krYZKh//PcchRtd+H+VyyQoZ/e3EcrkxhM8ycwASPA=" crossorigin="anonymous"></script>
@@ -125,18 +141,40 @@
             if (imagesLoaded.letter && imagesLoaded.envelopeFront) {
                 setTimeout(function() {
                     $('#loading-screen').addClass('hidden');
-
+                    
                     // Signal Puppeteer to start recording
                     document.body.setAttribute('data-record', 'start');
-                    // Remove from DOM after transition
+                    
+                    // Add recording mode flag if record parameter exists
+                    if (urlParams.get('record') === 'true') {
+                        document.body.setAttribute('data-recording', 'true');
+                    }
+                    
                     setTimeout(function() {
                         $('#loading-screen').remove();
                     }, 500);
-                }, 300); // Small delay for smooth transition
+                }, 300);
             }
         }
         
         jQuery(window).on('load', function(){
+            // Add this right after the jQuery(window).on('load') line, before timeline creation
+
+            // Check if this is a recording session
+            var isRecording = urlParams.get('record') === 'true';
+
+            if (isRecording) {
+                // Override GSAP ticker to match recording FPS (25)
+                gsap.ticker.fps(25); // Match the recording FPS!
+                
+                // Force consistent frame timing
+                gsap.config({
+                    force3D: true,
+                    nullTargetWarn: false,
+                });
+                
+                console.log('[RECORDING MODE] GSAP ticker set to 25 FPS');
+            }
             // Get love parameter from query string
             var urlParams = new URLSearchParams(window.location.search);
             var loveParam = urlParams.get('love');
@@ -301,12 +339,18 @@
             $('.scene').css('cursor', 'pointer');
             
             // Auto-play animation if play=true parameter is present
+            // Change this line (around line 203 in your code):
             if (shouldAutoPlay && !animationPlayed) {
                 setTimeout(function() {
-                    tl.play();
-                    animationPlayed = true;
-                    $('.scene').css('cursor', 'default');
-                }, 2000); // Wait 2 minutes (120000ms) before auto-play
+                    // If recording mode, give extra time for recorder to stabilize
+                    var recordingDelay = isRecording ? 1000 : 0;
+                    
+                    setTimeout(function() {
+                        tl.play();
+                        animationPlayed = true;
+                        $('.scene').css('cursor', 'default');
+                    }, recordingDelay);
+                }, 2000);
             }
             
             // Reverse animation when clicking on letter after it's fully opened

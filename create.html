@@ -51,9 +51,20 @@
                 }
                 
                 var encoded = encodeURIComponent(utoa(name));
-                var baseUrl = type === 'saigon' 
-                    ? 'https://vy.taicv.com/thiep/?play=true&love=' + encoded
-                    : 'https://vy.taicv.com/card/?play=true&love=' + encoded;
+                
+                // Check if running on localhost
+                var isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                
+                var baseUrl;
+                if (isLocalhost) {
+                    // Use localhost URL for both types
+                    baseUrl = 'http://localhost/envelope-animation/?play=true&love=' + encoded;
+                } else {
+                    // Use production URLs
+                    baseUrl = type === 'saigon' 
+                        ? 'https://vy.taicv.com/thiep/?play=true&love=' + encoded
+                        : 'https://vy.taicv.com/card/?play=true&love=' + encoded;
+                }
                 
                 var videoUrl = 'https://f810781d5fea.ngrok-free.app/?url=' + encodeURIComponent(baseUrl) + '&key=babb4d6ba4dcd4a952c315226bfccf6c4b86907e';
                 

@@ -42,6 +42,49 @@
                     document.getElementById('imagesSectionTP').style.display = 'block';
                 }
             }
+            
+            function generateVideo(type) {
+                var name = document.getElementById('nameInput').value;
+                if (!name) {
+                    alert('Please enter a name first');
+                    return;
+                }
+                
+                var encoded = encodeURIComponent(utoa(name));
+                
+                // Check if running on localhost
+                var isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                
+                var baseUrl;
+                if (isLocalhost) {
+                    // Use localhost URL for both types
+                    baseUrl = 'http://localhost/envelope-animation/?play=true&love=' + encoded;
+                } else {
+                    // Use production URLs
+                    baseUrl = type === 'saigon' 
+                        ? 'https://vy.taicv.com/thiep/?play=true&love=' + encoded
+                        : 'https://vy.taicv.com/card/?play=true&love=' + encoded;
+                }
+                
+                var videoUrl = 'https://f810781d5fea.ngrok-free.app/?url=' + encodeURIComponent(baseUrl) + '&key=babb4d6ba4dcd4a952c315226bfccf6c4b86907e';
+                
+                // Send fetch request with ngrok header
+                fetch(videoUrl, {
+                    method: 'GET',
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert('Video generation request sent successfully!');
+                    console.log('Response:', data);
+                })
+                .catch(error => {
+                    alert('Error sending video generation request: ' + error.message);
+                    console.error('Error:', error);
+                });
+            }
         </script>
         <style>
             body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
@@ -57,9 +100,15 @@
             button:hover { background: #1656c1; border-color: #1656c1; }
             button.secondary { background: #2da44e; border-color: #2da44e; }
             button.secondary:hover { background: #218838; border-color: #218838; }
+            button.video { background: #6f42c1; border-color: #6f42c1; }
+            button.video:hover { background: #5a32a3; border-color: #5a32a3; }
             .images-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
             .image-box img { width: 100%; border: 1px solid #d0d7de; border-radius: 8px; }
             .image-label { margin: 0 0 8px; font-size: 13px; color: #666; }
+            @media (max-width: 768px) {
+                .input-row { flex-wrap: wrap; }
+                .input-row input[type="text"] { flex: 1 1 100%; min-width: 100%; }
+            }
             @media (max-width: 640px) {
                 .images-grid { grid-template-columns: 1fr; }
             }
@@ -77,6 +126,7 @@
             <input id="encodedInput" type="text" placeholder="Generated link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedInput')">Copy</button>
             <button type="button" class="secondary" onclick="generateImages('saigon')">Generate images</button>
+            <button type="button" class="video" onclick="generateVideo('saigon')">Generate Video</button>
         </div>
     </div>
 
@@ -100,6 +150,7 @@
             <input id="encodedInput2" type="text" placeholder="Generated link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedInput2')">Copy</button>
             <button type="button" class="secondary" onclick="generateImages('tuyphong')">Generate images</button>
+            <button type="button" class="video" onclick="generateVideo('tuyphong')">Generate Video</button>
         </div>
     </div>
 

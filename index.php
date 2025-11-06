@@ -159,7 +159,7 @@
         
         jQuery(window).on('load', function(){
             // Add this right after the jQuery(window).on('load') line, before timeline creation
-
+            var urlParams = new URLSearchParams(window.location.search);
             // Check if this is a recording session
             var isRecording = urlParams.get('record') === 'true';
 
@@ -176,7 +176,7 @@
                 console.log('[RECORDING MODE] GSAP ticker set to 25 FPS');
             }
             // Get love parameter from query string
-            var urlParams = new URLSearchParams(window.location.search);
+            
             var loveParam = urlParams.get('love');
             
             // Update image sources if love parameter exists

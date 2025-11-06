@@ -41,7 +41,7 @@ img {
   background-image: url("../images/bg.jpg");
   background-size: cover;
   background-position: center;
-  filter: blur(10px);
+  filter: blur(5px);
 }
 
 .scene {

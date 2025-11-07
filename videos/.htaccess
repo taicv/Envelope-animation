@@ -3,4 +3,4 @@ RewriteEngine On
 # If .jpg file doesn't exist, route to index.php?love=filename
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.+)\.jpg$ index.php?love=$1 [L,QSA]
+RewriteRule ^(.+)\.mp4$ index.php?love=$1 [L,QSA]

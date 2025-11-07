@@ -60,7 +60,7 @@ function getVideo($author_data){
 		
 		$appUrl = $baseUrl . $loveEncoded;
 
-		// 3) Request to ngrok service to generate video
+		// 3) Request to ngrok service to generate video (timeout after 5 seconds)
 		$serviceBase = 'https://f810781d5fea.ngrok-free.app';
 		$key = 'babb4d6ba4dcd4a952c315226bfccf6c4b86907e';
 		$apiUrl = $serviceBase . '/?url=' . rawurlencode($appUrl) . '&key=' . rawurlencode($key);
@@ -71,7 +71,7 @@ function getVideo($author_data){
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_HTTPHEADER => ['ngrok-skip-browser-warning: true'],
-			CURLOPT_TIMEOUT => 60,
+			CURLOPT_TIMEOUT => 5,
 			CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_SSL_VERIFYHOST => 0,
 		]);
@@ -80,77 +80,46 @@ function getVideo($author_data){
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 
-		if ($response === false) {
-			throw new Exception('Failed to contact video service: ' . $curlErr);
-		}
-		if ($httpCode < 200 || $httpCode >= 300) {
-			throw new Exception('Video service HTTP ' . $httpCode . ': ' . $response);
-		}
-
-		$data = json_decode($response, true);
-		if (!is_array($data) || empty($data['success']) || empty($data['file'])) {
-			throw new Exception('Video generation failed or invalid response.');
-		}
-
-		// 4) Check if video is ready (wait up to 5 seconds)
-		$remotePath = $data['file']; // e.g., /files/xxx.mp4
-		$downloadUrl = $serviceBase . $remotePath;
-		
-		$videoReady = false;
-		$videoBinary = false;
-		$startTime = time();
-		$maxWaitTime = 5; // seconds
-		
-		while ((time() - $startTime) < $maxWaitTime) {
-			$ch2 = curl_init();
-			curl_setopt_array($ch2, [
-				CURLOPT_URL => $downloadUrl,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_FOLLOWLOCATION => true,
-				CURLOPT_HTTPHEADER => ['ngrok-skip-browser-warning: true'],
-				CURLOPT_TIMEOUT => 3,
-				CURLOPT_NOBODY => true, // HEAD request to check if file exists
-				CURLOPT_SSL_VERIFYPEER => false,
-				CURLOPT_SSL_VERIFYHOST => 0,
-			]);
-			curl_exec($ch2);
-			$httpCode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-			curl_close($ch2);
-			
-			if ($httpCode2 >= 200 && $httpCode2 < 300) {
-				// File exists, now download it
-				$ch3 = curl_init();
-				curl_setopt_array($ch3, [
-					CURLOPT_URL => $downloadUrl,
-					CURLOPT_RETURNTRANSFER => true,
-					CURLOPT_FOLLOWLOCATION => true,
-					CURLOPT_HTTPHEADER => ['ngrok-skip-browser-warning: true'],
-					CURLOPT_TIMEOUT => 180,
-					CURLOPT_SSL_VERIFYPEER => false,
-					CURLOPT_SSL_VERIFYHOST => 0,
-				]);
-				$videoBinary = curl_exec($ch3);
-				$curlErr3 = curl_error($ch3);
-				$httpCode3 = curl_getinfo($ch3, CURLINFO_HTTP_CODE);
-				curl_close($ch3);
-				
-				if ($videoBinary !== false && $httpCode3 >= 200 && $httpCode3 < 300) {
-					$videoReady = true;
-					break;
-				}
-			}
-			
-			// Wait 0.5 seconds before next check
-			usleep(500000);
-		}
-		
-		if (!$videoReady) {
+		if ($response === false || $httpCode < 200 || $httpCode >= 300) {
 			header('Content-Type: text/html; charset=utf-8');
 			header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 			header('Pragma: no-cache');
 			header('Expires: 0');
 			echo 'Video is not ready please check back in 30s';
 			exit;
+		}
+
+		$data = json_decode($response, true);
+		if (!is_array($data) || empty($data['success']) || empty($data['file'])) {
+			header('Content-Type: text/html; charset=utf-8');
+			header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+			header('Pragma: no-cache');
+			header('Expires: 0');
+			echo 'Video is not ready please check back in 30s';
+			exit;
+		}
+
+		// 4) Download the generated video file
+		$remotePath = $data['file']; // e.g., /files/xxx.mp4
+		$downloadUrl = $serviceBase . $remotePath;
+
+		$ch2 = curl_init();
+		curl_setopt_array($ch2, [
+			CURLOPT_URL => $downloadUrl,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTPHEADER => ['ngrok-skip-browser-warning: true'],
+			CURLOPT_TIMEOUT => 180,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_SSL_VERIFYHOST => 0,
+		]);
+		$videoBinary = curl_exec($ch2);
+		$curlErr2 = curl_error($ch2);
+		$httpCode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+		curl_close($ch2);
+
+		if ($videoBinary === false || $httpCode2 < 200 || $httpCode2 >= 300) {
+			throw new Exception('Failed to download video: ' . $curlErr2);
 		}
 
 		// 5) Save to current path using base64_encode($name).mp4

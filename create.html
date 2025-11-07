@@ -190,6 +190,9 @@
             @media (max-width: 768px) {
                 .input-row { flex-wrap: wrap; }
                 .input-row input[type="text"] { flex: 1 1 100%; min-width: 100%; }
+                /* Keep compact input+copy rows on one line on mobile */
+                .input-row.input-compact { flex-wrap: nowrap; }
+                .input-row.input-compact input[type="text"] { flex: 1 1 auto; min-width: 0; }
             }
             @media (max-width: 640px) {
                 .images-grid { grid-template-columns: 1fr; }
@@ -204,15 +207,17 @@
 
     <div class="field">
         <label for="encodedInput">Link Thiệp Sài Gòn</label>
-        <div class="input-row">
+        <div class="input-row input-compact">
             <input id="encodedInput" type="text" placeholder="Generated link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedInput')">Copy</button>
-            <button type="button" class="secondary" onclick="generateImages('saigon')">Generate images</button>
-            <button type="button" id="videoButtonSG" class="video" onclick="generateVideo('saigon')">Generate Video</button>
         </div>
-        <div class="input-row" style="margin-top: 8px;">
+        <div class="input-row input-compact" style="margin-top: 8px;">
             <input id="encodedVideoSG" type="text" placeholder="Generated video link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedVideoSG')">Copy</button>
+        </div>
+        <div class="input-row" style="margin-top: 8px;">
+            <button type="button" class="secondary" onclick="generateImages('saigon')">Generate images</button>
+            <button type="button" id="videoButtonSG" class="video" onclick="generateVideo('saigon')">Save Video</button>
         </div>
         <div id="statusSG" class="status-message"></div>
     </div>
@@ -233,15 +238,17 @@
 
     <div class="field">
         <label for="encodedInput2">Link Thiệp Tuy Phong</label>
-        <div class="input-row">
+        <div class="input-row input-compact">
             <input id="encodedInput2" type="text" placeholder="Generated link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedInput2')">Copy</button>
-            <button type="button" class="secondary" onclick="generateImages('tuyphong')">Generate images</button>
-            <button type="button" id="videoButtonTP" class="video" onclick="generateVideo('tuyphong')">Generate Video</button>
         </div>
-        <div class="input-row" style="margin-top: 8px;">
+        <div class="input-row input-compact" style="margin-top: 8px;">
             <input id="encodedVideoTP" type="text" placeholder="Generated video link" readonly onclick="this.select();" />
             <button type="button" onclick="copyEncoded('encodedVideoTP')">Copy</button>
+        </div>
+        <div class="input-row" style="margin-top: 8px;">
+            <button type="button" class="secondary" onclick="generateImages('tuyphong')">Generate images</button>
+            <button type="button" id="videoButtonTP" class="video" onclick="generateVideo('tuyphong')">Save Video</button>
         </div>
         <div id="statusTP" class="status-message"></div>
     </div>

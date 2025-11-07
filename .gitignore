@@ -4,4 +4,4 @@ images/envelop-front/*.jpg
 .specstory/history/*
 .gitignore
 images/*.psd
-images/videos/*.mp4
+videos/*.mp4

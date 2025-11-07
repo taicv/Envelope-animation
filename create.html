@@ -199,7 +199,7 @@
 <body>
     <div class="field">
         <label for="nameInput">Name</label>
-        <input id="nameInput" type="text" placeholder="Enter name" onkeyup="var encoded = encodeURIComponent(utoa(this.value)); document.getElementById('encodedInput').value = 'https://vy.taicv.com/thiep/?love=' + encoded; document.getElementById('encodedInput2').value = 'https://vy.taicv.com/card/?love=' + encoded;" />
+        <input id="nameInput" type="text" placeholder="Enter name" onkeyup="var encoded = encodeURIComponent(utoa(this.value)); document.getElementById('encodedInput').value = 'https://vy.taicv.com/thiep/?love=' + encoded; document.getElementById('encodedInput2').value = 'https://vy.taicv.com/card/?love=' + encoded; document.getElementById('encodedVideoSG').value = 'https://vy.taicv.com/thiep/videos/?love=' + encoded; document.getElementById('encodedVideoTP').value = 'https://vy.taicv.com/card/videos/?love=' + encoded;" />
     </div>
 
     <div class="field">
@@ -209,6 +209,10 @@
             <button type="button" onclick="copyEncoded('encodedInput')">Copy</button>
             <button type="button" class="secondary" onclick="generateImages('saigon')">Generate images</button>
             <button type="button" id="videoButtonSG" class="video" onclick="generateVideo('saigon')">Generate Video</button>
+        </div>
+        <div class="input-row" style="margin-top: 8px;">
+            <input id="encodedVideoSG" type="text" placeholder="Generated video link" readonly onclick="this.select();" />
+            <button type="button" onclick="copyEncoded('encodedVideoSG')">Copy</button>
         </div>
         <div id="statusSG" class="status-message"></div>
     </div>
@@ -234,6 +238,10 @@
             <button type="button" onclick="copyEncoded('encodedInput2')">Copy</button>
             <button type="button" class="secondary" onclick="generateImages('tuyphong')">Generate images</button>
             <button type="button" id="videoButtonTP" class="video" onclick="generateVideo('tuyphong')">Generate Video</button>
+        </div>
+        <div class="input-row" style="margin-top: 8px;">
+            <input id="encodedVideoTP" type="text" placeholder="Generated video link" readonly onclick="this.select();" />
+            <button type="button" onclick="copyEncoded('encodedVideoTP')">Copy</button>
         </div>
         <div id="statusTP" class="status-message"></div>
     </div>

@@ -209,6 +209,12 @@
             // Play animation on click/tap
             $('.scene').on('click', function(){
                 if (!animationPlayed) {
+                    // Start background music with fade-in
+                    var music = document.getElementById('bg-music');
+                    music.volume = 0; // Start at 0 volume
+                    music.play();
+                    gsap.to(music, {volume: 1, duration: 2, ease: "power2.inOut"}); // Fade in over 2 seconds
+                    
                     tl.play();
                     animationPlayed = true;
                     $(this).css('cursor', 'default'); // Change cursor after animation starts
@@ -295,6 +301,9 @@
     </div>
     
     <div class="wrapper">
+        <!-- Background Music -->
+        <audio id="bg-music" src="images/music.m4a" loop></audio>
+        
         <!-- Video Background with fallback -->
         <video id="bg-video" autoplay loop muted playsinline poster="images/bg.jpg">
             <source src="images/bg.mp4" type="video/mp4">

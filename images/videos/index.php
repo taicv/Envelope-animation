@@ -61,7 +61,7 @@ function getVideo($author_data){
 		$appUrl = $baseUrl . $loveEncoded;
 
 		// 3) Request to ngrok service to generate video
-		$serviceBase = 'https://f810781d5fea.ngrok-free.app';
+		$serviceBase = 'https://powerful-totally-terrapin.ngrok-free.app';
 		$key = 'babb4d6ba4dcd4a952c315226bfccf6c4b86907e';
 		$apiUrl = $serviceBase . '/?url=' . rawurlencode($appUrl) . '&key=' . rawurlencode($key);
 
